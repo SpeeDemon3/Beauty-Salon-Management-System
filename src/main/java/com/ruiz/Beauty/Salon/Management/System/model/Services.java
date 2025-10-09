@@ -12,7 +12,6 @@ import lombok.Setter;
  * Entidad que representa un servicio ofrecido por el salón de belleza.
  * Incluye detalles como nombre, descripción, precio y duración.
  */
-
 @Entity
 @NoArgsConstructor
 @Getter

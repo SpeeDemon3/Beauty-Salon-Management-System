@@ -15,7 +15,6 @@ import java.time.LocalDate;
  * Entidad que representa a un cliente en el sistema de gestión del salón de belleza.
  * Incluye detalles personales, información de contacto, historial y preferencias.
  */
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

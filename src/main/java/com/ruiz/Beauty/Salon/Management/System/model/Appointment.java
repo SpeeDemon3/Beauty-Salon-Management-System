@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
  * Entidad que representa una cita en el sistema de gestión del salón de belleza.
  * Incluye detalles como cliente, empleado, servicio, fecha y estado.
  */
-
 @Entity
 @NoArgsConstructor
 @Getter

@@ -13,7 +13,6 @@ import java.util.List;
  * Entidad que representa una transacción o venta en el sistema de gestión del salón de belleza.
  * Incluye detalles como empleado, cliente, fecha, monto total, método de pago e ítems vendidos.
  */
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

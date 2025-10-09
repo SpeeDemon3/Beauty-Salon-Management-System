@@ -15,7 +15,6 @@ import java.math.BigDecimal;
  * Entidad que representa un producto en el sistema de gestión del salón de belleza.
  * Incluye detalles como nombre, descripción, precio y stock.
  */
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

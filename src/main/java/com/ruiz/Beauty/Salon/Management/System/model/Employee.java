@@ -14,7 +14,6 @@ import java.time.LocalDate;
  * Entidad que representa a un empleado en el sistema de gestión del salón de belleza.
  * Incluye detalles personales, rol, y condiciones laborales.
  */
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

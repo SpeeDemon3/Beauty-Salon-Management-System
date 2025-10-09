@@ -11,7 +11,6 @@ import java.math.BigDecimal;
  * Entidad que representa un ítem dentro de una transacción (venta) en el sistema de gestión del salón de belleza.
  * Cada ítem puede ser un producto o un servicio vendido.
  */
-
 @Entity
 @NoArgsConstructor
 @Getter
