@@ -1,6 +1,8 @@
 package com.ruiz.Beauty.Salon.Management.System.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,8 @@ public class Services {
      * duracionMinutos	Integer	Tiempo estimado que toma el servicio (para calcular la disponibilidad).
      */
 
+    @Id
+    @GeneratedValue
     private Long id;
     private String name;
     private String description;

@@ -1,10 +1,7 @@
 package com.ruiz.Beauty.Salon.Management.System.model;
 
 import com.ruiz.Beauty.Salon.Management.System.enums.AppointmentState;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,10 +31,22 @@ public class Appointment {
      * estado	String / Enum	Estado de la cita (PENDIENTE, CONFIRMADA, CANCELADA, COMPLETADA).
      */
 
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "client_id")
     private Client client;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "employee_id")
     private Employee employee;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "service_id")
     private Services service;
+
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     @Enumerated(EnumType.STRING)
