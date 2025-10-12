@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 @Builder
-public class ClientResponse {
+public class ClientRequest {
 
     private Long id;
     private String name;
@@ -20,4 +20,5 @@ public class ClientResponse {
     private String notes; // Notas del estilista (ej. alergias, tipo de cabello, preferencias).
     private Integer loyaltyPoints;
     private LocalDate registrationDate;
+
 }

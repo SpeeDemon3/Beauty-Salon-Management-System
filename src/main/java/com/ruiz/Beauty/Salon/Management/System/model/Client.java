@@ -42,7 +42,7 @@ public class Client {
     private String name;
     private String email;
     private String phone;
-    private String notes;
+    private String notes; // Notas del estilista (ej. alergias, tipo de cabello, preferencias).
     private Integer loyaltyPoints;
     private LocalDate registrationDate;
 
