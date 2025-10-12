@@ -6,21 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class EmployeeResponse {
+public class EmployeeRequest {
 
-    private Long id;
     private String name;
     private String email;
-    private ROL rol;
+    private String password;
+    private ROL rol = ROL.EMPLOYEE; // Valor por defecto
     private String phone;
-    private LocalDate hiringDate;
-    private BigDecimal commissionRate;
-
 }

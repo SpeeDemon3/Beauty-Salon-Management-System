@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Table(name = "itemTransaccion")
-public class ItemTransaccion {
+public class ItemTransaction {
 
     /**
      *
@@ -35,7 +35,7 @@ public class ItemTransaccion {
 
     @ManyToOne
     @JoinColumn(name = "transaction_id")
-    private Transaccion transaction;
+    private Transaction transaction;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

@@ -1,6 +1,6 @@
 package com.ruiz.Beauty.Salon.Management.System.repository;
 
-import com.ruiz.Beauty.Salon.Management.System.model.ItemTransaccion;
+import com.ruiz.Beauty.Salon.Management.System.model.ItemTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * Proporciona métodos CRUD y de consulta para los ítems de transacciones (ventas).
  */
 @Repository
-public interface ItemTransaccionRepository extends JpaRepository<ItemTransaccion, Long> {
+public interface ItemTransaccionRepository extends JpaRepository<ItemTransaction, Long> {
 }

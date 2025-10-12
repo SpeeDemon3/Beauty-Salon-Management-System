@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "transaction")
-public class Transaccion {
+public class Transaction {
 
     /**
      *
@@ -48,5 +48,5 @@ public class Transaccion {
     private PaymentMethod paymentMethod;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
-    private List<ItemTransaccion> soldItems;
+    private List<ItemTransaction> soldItems;
 }
