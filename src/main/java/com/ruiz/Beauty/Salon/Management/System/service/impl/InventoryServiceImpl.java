@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,11 +105,19 @@ public class InventoryServiceImpl implements InventoryService {
         return null;
     }
 
+    //OK
     @Override
     public List<ProductResponse> getAllProducts() {
-        /**
-         * Lista todo el catálogo.	Utiliza ProductoRepository.findAll().
-         */
+
+        List<Product> productListEntity = inventoryRepository.findAll();
+        List<ProductResponse> productResponseList = new ArrayList<>();
+
+        if (!productListEntity.isEmpty()) {
+            for (Product product : productListEntity) {
+                productResponseList.add(productConverter.toProductResponse(product));
+            }
+        }
+
         return List.of();
     }
 
@@ -119,21 +130,59 @@ public class InventoryServiceImpl implements InventoryService {
         return "";
     }
 
+    //OK
     @Override
     public String getTotalInventoryCost() {
         /**
          * Calcula el valor total de todos los productos en stock usando su precioCosto.
          * Itera sobre todos los productos y suma (stockActual * precioCosto).
          */
-        return "";
+
+        List<Product> productList = inventoryRepository.findAll();
+
+        // Inicializar con BigDecimal.ZERO en lugar de new BigDecimal(0)
+        BigDecimal result = BigDecimal.ZERO;
+
+        for (Product product : productList) {
+            // Verificar que los valores no sean nulos antes de operar
+            if (product.getCostPrice() != null && product.getCurrentStock() != null) {
+                // Calcular el costo por producto: precioCosto * stockActual
+                BigDecimal productCost = product.getCostPrice()
+                        .multiply(BigDecimal.valueOf(product.getCurrentStock()));
+
+                // Sumar al resultado total usando add() en lugar de +=
+                result = result.add(productCost);
+            }
+        }
+
+        // Aplicar el redondeo al resultado final (no en cada iteración)
+        result = result.setScale(2, RoundingMode.HALF_UP);
+
+        // Retornar el resultado como String
+        return result.toString();
+
     }
 
+    //OK
     /**
      * Busca un producto por su nombre ignorando mayúsculas/minúsculas.
      * Útil para búsquedas en el catálogo.
      */
     @Override
     public Optional<Product> findByNameIgnoreCase(String name) {
+
+        List<Product> productList = inventoryRepository.findAll();
+
+        if (!productList.isEmpty()) {
+            for (Product product : productList) {
+                if (name.equalsIgnoreCase(product.getName())) {
+
+                    return Optional.of(product);
+                }
+            }
+        }
+
+        log.info("Product not found with name: {}", name);
         return Optional.empty();
     }
 

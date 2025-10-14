@@ -3,6 +3,7 @@ package com.ruiz.Beauty.Salon.Management.System.controller;
 import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductRequest;
 import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductResponse;
 import com.ruiz.Beauty.Salon.Management.System.controller.mapper.ProductMapper;
+import com.ruiz.Beauty.Salon.Management.System.service.InventoryService;
 import com.ruiz.Beauty.Salon.Management.System.service.impl.InventoryServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,15 @@ import java.util.List;
 @RestController
 @RequestMapping("api/inventory")
 public class InventoryController {
-    private final InventoryServiceImpl inventarioService;
+    private final InventoryServiceImpl inventoryService;
 
     @Autowired
     private ProductMapper productMapper;
 
     // Inyección de dependencias (por constructor, la mejor práctica)
     @Autowired
-    public InventoryController(InventoryServiceImpl inventarioService) {
-        this.inventarioService = inventarioService;
+    public InventoryController(InventoryServiceImpl inventoryService) {
+        this.inventoryService = inventoryService;
     }
 
     // --- 1. GESTIÓN DEL CATÁLOGO (CRUD BÁSICO) ---
@@ -37,7 +38,7 @@ public class InventoryController {
     public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productData) {
 
         try {
-            inventarioService.createProduct(productData);
+            inventoryService.createProduct(productData);
             return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductResponse(productData));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.internalServerError().build();
@@ -51,17 +52,32 @@ public class InventoryController {
         return ResponseEntity.ok(productoActualizado);
     }
 
+    //OK
     @GetMapping("/products")
-    public ResponseEntity<List<?>> obtenerTodosProductos() {
-        // Devuelve 200 OK
-        return ResponseEntity.ok(inventarioService.obtenerTodosProductos());
+    public ResponseEntity<List<?>> getAllProducts() {
+        try {
+            return ResponseEntity.ok(inventoryService.getAllProducts());
+        } catch (HttpClientErrorException.NotFound e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     //OK
     @GetMapping("/product/{id}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(inventarioService.getProductById(id));
+            return ResponseEntity.status(HttpStatus.OK).body(inventoryService.getProductById(id));
+        } catch (HttpClientErrorException.NotFound e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    //OK
+    @GetMapping("/product/{name}")
+    public ResponseEntity<?> findByNameIgnoreCase(@PathVariable String name) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(inventoryService.findByNameIgnoreCase(name));
         } catch (HttpClientErrorException.NotFound e) {
             return ResponseEntity.notFound().build();
         }
@@ -73,7 +89,7 @@ public class InventoryController {
     @PostMapping("/stock/entry/{id}")
     public ResponseEntity<?> registerStockEntry(@PathVariable Long id, @RequestParam Integer amount) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(inventarioService.registerStockEntry(id, amount));
+            return ResponseEntity.status(HttpStatus.OK).body(inventoryService.registerStockEntry(id, amount));
         } catch (HttpClientErrorException.NotFound clientErrorException) {
             return ResponseEntity.notFound().build();
         } catch (HttpServerErrorException.InternalServerError internalServerError) {
@@ -101,9 +117,13 @@ public class InventoryController {
         return ResponseEntity.ok(productosBajoStock);
     }
 
+    // OK
     @GetMapping("/reporte/costo-total")
-    public ResponseEntity<BigDecimal> obtenerCostoTotalInventario() {
-        BigDecimal costoTotal = inventarioService.obtenerCostoTotalInventario();
-        return ResponseEntity.ok(costoTotal);
+    public ResponseEntity<String> getTotalInventoryCost() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(inventoryService.getTotalInventoryCost());
+        } catch (HttpServerErrorException.InternalServerError e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 }
