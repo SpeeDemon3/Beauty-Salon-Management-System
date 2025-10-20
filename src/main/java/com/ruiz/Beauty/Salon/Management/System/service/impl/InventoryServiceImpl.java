@@ -100,12 +100,49 @@ public class InventoryServiceImpl implements InventoryService {
         return productConverter.toProductResponse(productSave);
     }
 
+    //OK
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest productData) {
         /**
          * Modifica datos como el precioVenta, precioCosto o stockMinimo.
          * Busca el producto por ID, aplica las actualizaciones y guarda.
          */
+
+        Optional<Product> productOptional = inventoryRepository.findById(id);
+
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+
+            if (productData.getName() != null) {
+                product.setName(productData.getName());
+            }
+
+            if (productData.getDescription() != null) {
+                product.setDescription(productData.getDescription());
+            }
+
+            if (productData.getSalePrice() != null) {
+                product.setSalePrice(productData.getSalePrice());
+            }
+
+            if (productData.getCostPrice() != null) {
+                product.setCostPrice(productData.getCostPrice());
+            }
+
+            if (productData.getCurrentStock() != null) {
+                product.setCurrentStock(productData.getCurrentStock());
+            }
+
+            if (productData.getMinimumStock() != null) {
+                product.setMinimumStock(productData.getMinimumStock());
+            }
+
+            Product productUpdate = inventoryRepository.save(product);
+
+            return productConverter.toProductResponse(productUpdate);
+        }
+
+        log.error("The product cannot be updated due to some error.");
         return null;
     }
 

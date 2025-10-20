@@ -46,10 +46,15 @@ public class InventoryController {
 
     }
 
+    //OK
     @PutMapping("/products/{id}")
-    public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @RequestBody ProductoDTO productoData) {
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody ProductRequest productData) {
+        try {
+            return ResponseEntity.ok(inventoryService.updateProduct(id, productData));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        return ResponseEntity.ok(productoActualizado);
     }
 
     //OK
