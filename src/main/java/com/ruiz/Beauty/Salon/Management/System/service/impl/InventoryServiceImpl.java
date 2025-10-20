@@ -51,23 +51,40 @@ public class InventoryServiceImpl implements InventoryService {
         return null;
     }
 
+    // OK
     @Override
     public Boolean registerOutputStock(Long productId, Integer quantity) {
         /**
          * Registra una deducción de stock por venta o uso en un servicio. Disminuye el stock actual.
          * Validación Crítica: Debe llamar a verificarStockSuficiente() antes de la deducción.
-         * Lanza una excepción si no hay suficiente.
          */
-        return null;
+
+        if(checkSufficientStock(productId, quantity)) {
+            Product product = inventoryRepository.findById(productId).get();
+            product.setCurrentStock(product.getCurrentStock() - quantity);
+            return true;
+        }
+
+        log.error("There is not enough stock!!!");
+
+        return false;
     }
 
-    @Override
-    public Boolean checkSufficientStock(Long productId, Integer quantityRequired) {
+    //OK
+    private Boolean checkSufficientStock(Long productId, Integer quantityRequired) {
         /**
          * Método auxiliar privado que verifica si el stockActual de un producto cubre la cantidad solicitada.
          * Devuelve true/false. Usado internamente por registrarSalidaStock.
          */
-        return null;
+
+        Optional<Product> productOptional = inventoryRepository.findById(productId);
+
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            return product.getCurrentStock() >= quantityRequired;
+        }
+
+        return false;
     }
 
     //OK
@@ -99,6 +116,10 @@ public class InventoryServiceImpl implements InventoryService {
         Optional<Product> productOptional = inventoryRepository.findById(id);
 
         if (productOptional.isPresent()) {
+            if (productOptional.get().getCurrentStock() < 11) {
+                generateLowStockAlert();
+                log.info("Product with low stock: {}", productOptional.get().getName());
+            }
             return productConverter.toProductResponse(productOptional.get());
         }
 
@@ -114,6 +135,10 @@ public class InventoryServiceImpl implements InventoryService {
 
         if (!productListEntity.isEmpty()) {
             for (Product product : productListEntity) {
+                if (product.getCurrentStock() < 11) {
+                    generateLowStockAlert();
+                    log.info("Product with low stock: {}", product.getName());
+                }
                 productResponseList.add(productConverter.toProductResponse(product));
             }
         }
@@ -121,13 +146,17 @@ public class InventoryServiceImpl implements InventoryService {
         return List.of();
     }
 
+    //OK
     @Override
     public String generateLowStockAlert() {
         /**
          * Devuelve una lista de productos que están por debajo de su stockMinimo.
          * Llama a un método personalizado en el ProductoRepository: findAllByStockActualLessThan(stockMinimo).
          */
-        return "";
+
+        findAllByStockActualLessThanEqual(10);
+
+        return "There are products with low stock!!!!";
     }
 
     //OK
@@ -186,6 +215,7 @@ public class InventoryServiceImpl implements InventoryService {
         return Optional.empty();
     }
 
+    //OK
     /**
      * Obtiene una lista de productos cuyo stock actual es menor
      * o igual a un nivel específico. Esencial para las alertas.
@@ -195,6 +225,21 @@ public class InventoryServiceImpl implements InventoryService {
      */
     @Override
     public List<Product> findAllByStockActualLessThanEqual(Integer stockLimit) {
+
+        List<Product> productList = inventoryRepository.findAll();
+
+        if (!productList.isEmpty()) {
+            List<Product> lowStockProducts = new ArrayList<>();
+
+            for (Product product : productList) {
+                if (product.getCurrentStock() <= stockLimit) {
+                    lowStockProducts.add(product);
+                }
+            }
+
+            return lowStockProducts;
+        }
+
         return List.of();
     }
 

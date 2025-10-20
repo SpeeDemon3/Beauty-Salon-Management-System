@@ -3,7 +3,7 @@ package com.ruiz.Beauty.Salon.Management.System.controller;
 import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductRequest;
 import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductResponse;
 import com.ruiz.Beauty.Salon.Management.System.controller.mapper.ProductMapper;
-import com.ruiz.Beauty.Salon.Management.System.service.InventoryService;
+import com.ruiz.Beauty.Salon.Management.System.model.Product;
 import com.ruiz.Beauty.Salon.Management.System.service.impl.InventoryServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -97,24 +97,42 @@ public class InventoryController {
         }
     }
 
+    //OK
     // Nota: La salida de stock se maneja principalmente dentro de TransaccionService,
     // pero se podría exponer un endpoint para ajustes manuales.
-    @PostMapping("/stock/ajuste/salida/{id}")
-    public ResponseEntity<?> registrarAjusteSalida(@PathVariable Long id, @RequestParam Integer cantidad) {
+    @PostMapping("/stock/adjustment/output/{idProduct}")
+    public ResponseEntity<?> registerOutputStock(@PathVariable Long idProduct, @RequestParam Integer quantity) {
         // Lógica de validación (ej. solo ADMIN puede hacer ajustes manuales)
-        // ...
-        ProductoDTO producto = inventarioService.registrarSalidaStock(id, cantidad);
-        return ResponseEntity.ok(producto);
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(inventoryService.registerOutputStock(idProduct, quantity));
+        } catch (HttpServerErrorException.InternalServerError e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+
     }
 
     // --- 3. REPORTES Y ALERTAS ---
 
-    @GetMapping("/alertas/bajo-stock")
+    //OK
+    @GetMapping("/alert/low-stock")
     // Este método requeriría autenticación de un rol con permisos (ej. ADMIN o EMPLEADO)
-    public ResponseEntity<List<?>> obtenerAlertaBajoStock() {
-        List<ProductoDTO> productosBajoStock = inventarioService.generarAlertaBajoStock();
-        // Devuelve 200 OK. La lista vacía significa que no hay alertas.
-        return ResponseEntity.ok(productosBajoStock);
+    public ResponseEntity<List<ProductResponse>> findAllByStockActualLessThanEqual() {
+        List<Product> productList = inventoryService.findAllByStockActualLessThanEqual(10);
+
+        try {
+            if (productList.isEmpty()) {
+                return ResponseEntity.ok().build();
+            }
+            return null;
+        } catch (Exception e) {
+            List<ProductResponse> productResponseList = new ArrayList<>();
+
+            for (Product response : productList) {
+                productResponseList.add(productMapper.toProductResponse(response));
+            }
+            return ResponseEntity.ok(productResponseList);
+
+        }
     }
 
     // OK

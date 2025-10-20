@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface InventoryService {
     Boolean registerStockEntry(Long productId, Integer quantity);
     Boolean registerOutputStock(Long productId, Integer quantity);
-    Boolean checkSufficientStock(Long productId, Integer quantityRequired);
     ProductResponse createProduct(ProductRequest productData);
     ProductResponse updateProduct(Long id, ProductRequest productData);
     ProductResponse getProductById(Long id);
