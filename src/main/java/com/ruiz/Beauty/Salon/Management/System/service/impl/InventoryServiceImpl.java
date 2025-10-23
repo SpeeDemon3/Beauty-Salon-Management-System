@@ -174,7 +174,27 @@ public class InventoryServiceImpl implements InventoryService {
         return null;
     }
 
-    //OK
+    /**
+     * Retrieves a product by its unique identifier with stock level monitoring.
+     *
+     * Fetches a specific product from the database using the provided ID. Automatically
+     * checks the product's stock level and generates low stock alerts if the current
+     * stock falls below the threshold (10 units). Returns the product data as a
+     * response DTO or null if the product is not found.
+     *
+     * @param id the unique identifier of the product to retrieve
+     * @return ProductResponse the product data as a response DTO, or null if not found
+     *
+     * @implNote This method performs three main operations:
+     * 1. Retrieves the product entity from the database by ID
+     * 2. Checks stock levels and generates alerts for low stock conditions
+     * 3. Converts the entity to a response DTO for API consumption
+     *
+     * @see Product
+     * @see ProductResponse
+     * @see #generateLowStockAlert()
+     * @since 1.0
+     */
     @Override
     public ProductResponse getProductById(Long id) {
 
@@ -185,7 +205,9 @@ public class InventoryServiceImpl implements InventoryService {
                 generateLowStockAlert();
                 log.info("Product with low stock: {}", productOptional.get().getName());
             }
-            return productConverter.toProductResponse(productOptional.get());
+            ProductResponse response = productConverter.toProductResponse(productOptional.get());
+            log.info("Product found: {}", response);
+            return response;
         }
 
         return null;

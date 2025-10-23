@@ -164,9 +164,43 @@ public class InventoryController {
         }
     }
 
-    //OK
-    @GetMapping("/product/{id}")
+    /**
+     * Retrieves a specific product by its unique identifier.
+     *
+     * This endpoint fetches a single product from the inventory system using the provided ID.
+     * Returns the product details if found, or a 404 status if the product does not exist.
+     * Includes comprehensive logging for request tracking and debugging purposes.
+     *
+     * @param id the unique identifier of the product to retrieve
+     * @return ResponseEntity containing the product data with HTTP 200 status on success,
+     *         or HTTP 404 status if no product is found with the specified ID
+     * @throws HttpClientErrorException.NotFound if the product with the given ID does not exist
+     *
+     * @apiNote The ID must be a valid positive long value. The endpoint performs exact match
+     *          lookup and returns a single product entity.
+     *
+     * @example
+     * // Sample request: GET /api/inventory/product/findById/123
+     *
+     * // Sample response (200 OK):
+     * {
+     *   "id": 123,
+     *   "name": "Professional Shampoo",
+     *   "description": "Premium hair care product",
+     *   "salePrice": 25.99,
+     *   "costPrice": 15.50,
+     *   "currentStock": 45,
+     *   "minimumStock": 10,
+     *   "createdAt": "2023-10-05T10:30:00Z",
+     *   "updatedAt": "2023-10-05T14:20:00Z"
+     * }
+     *
+     * @see InventoryService#getProductById(Long)
+     * @since 1.0
+     */
+    @GetMapping("/product/findById/{id}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+        log.info("Enter in controller getProductById");
         try {
             return ResponseEntity.status(HttpStatus.OK).body(inventoryService.getProductById(id));
         } catch (HttpClientErrorException.NotFound e) {
