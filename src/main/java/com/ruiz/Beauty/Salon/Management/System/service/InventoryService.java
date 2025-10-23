@@ -18,7 +18,7 @@ public interface InventoryService {
     List<ProductResponse> getAllProducts();
     String generateLowStockAlert();
     String getTotalInventoryCost();
-    Optional<Product> findByNameIgnoreCase(String name);
+    Optional<ProductResponse> findByNameIgnoreCase(String name);
     List<Product> findAllByCurrentStockLessThanEqual(Integer stockLimit);
     List<ProductResponse> findByNameContainingIgnoreCase(String name);
 }

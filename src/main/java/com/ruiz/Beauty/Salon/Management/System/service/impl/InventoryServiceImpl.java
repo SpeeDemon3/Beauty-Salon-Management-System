@@ -335,7 +335,7 @@ public class InventoryServiceImpl implements InventoryService {
      * @since 1.0
      */
     @Override
-    public Optional<Product> findByNameIgnoreCase(String name) {
+    public Optional<ProductResponse> findByNameIgnoreCase(String name) {
 
         List<Product> productList = inventoryRepository.findAll();
 
@@ -343,7 +343,7 @@ public class InventoryServiceImpl implements InventoryService {
             for (Product product : productList) {
                 if (name.equalsIgnoreCase(product.getName())) {
 
-                    return Optional.of(product);
+                    return Optional.of(productConverter.toProductResponse(product));
                 }
             }
         }
@@ -381,12 +381,30 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     /**
-     * Busca productos cuyo nombre contenga la cadena proporcionada.
-     * Útil para la función de autocompletar o búsqueda en el TPV.
+     * Finds products by name using case-insensitive partial matching.
+     *
+     * Searches for products whose names contain the provided search string,
+     * ignoring case differences. Converts matching products to response DTOs
+     * and returns them as a list. Returns an empty list instead of null when
+     * no products are found to maintain API consistency.
+     *
+     * @param name the search string to match against product names (case-insensitive)
+     * @return List of ProductResponse objects containing matching products,
+     *         or empty list if no matches are found
+     *
+     * @implNote This method converts entity objects to response DTOs to ensure
+     *           proper separation between persistence layer and API layer.
+     *           The search performs partial matching, so products containing
+     *           the search string anywhere in their name will be included.
+     *
+     * @see Product
+     * @see ProductResponse
+     * @see ProductConverter#toProductResponse(Product)
+     * @since 1.0
      */
     @Override
     public List<ProductResponse> findByNameContainingIgnoreCase(String name) {
-        List<Product> results = inventoryRepository.findByNameContainingIgnoreCase("shampoo");
+        List<Product> results = inventoryRepository.findByNameContainingIgnoreCase(name);
 
         if (!results.isEmpty()) {
             List<ProductResponse> productResponseList = new ArrayList<>();
