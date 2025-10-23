@@ -87,7 +87,16 @@ public class InventoryServiceImpl implements InventoryService {
         return false;
     }
 
-    //OK
+    /**
+     * Creates a new product in the inventory system.
+     *
+     * Converts the provided product request data to a Product entity, persists it
+     * to the database, and returns the saved product as a response DTO.
+     * Includes logging for monitoring the creation process.
+     *
+     * @param productData the product request data containing product information
+     * @return ProductResponse the created product as a response DTO
+     */
     @Override
     public ProductResponse createProduct(ProductRequest productData) {
 

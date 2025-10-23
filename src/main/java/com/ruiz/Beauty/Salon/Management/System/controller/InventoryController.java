@@ -5,7 +5,6 @@ import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductResponse;
 import com.ruiz.Beauty.Salon.Management.System.controller.mapper.ProductMapper;
 import com.ruiz.Beauty.Salon.Management.System.model.Product;
 import com.ruiz.Beauty.Salon.Management.System.service.InventoryService;
-import com.ruiz.Beauty.Salon.Management.System.service.impl.InventoryServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,13 +29,47 @@ public class InventoryController {
 
     // --- 1. GESTIÓN DEL CATÁLOGO (CRUD BÁSICO) ---
 
-    //OK
+    /**
+     * Creates a new product in the inventory system.
+     *
+     * This endpoint accepts product data in the request body and attempts to persist it
+     * to the database. If successful, returns the created product with HTTP 201 status.
+     * Handles invalid input by returning an appropriate error response.
+     *
+     * @param productData the product information to be created, provided in the request body
+     * @return ResponseEntity containing the created product with HTTP 201 status on success,
+     *         or HTTP 500 status if an illegal argument error occurs during processing
+     * @throws IllegalArgumentException if the provided product data contains invalid values
+     *                                  that violate business logic constraints
+     *
+     * @apiNote This endpoint is part of the product inventory management system and
+     *          requires valid product data including name, price, and stock information.
+     *
+     * @example
+     * // Sample request body:
+     * {
+     *   "name": "Shampoo",
+     *   "description": "Hair care product",
+     *   "price": 15.99,
+     *   "stock": 100
+     * }
+     *
+     * // Sample response (201 Created):
+     * {
+     *   "id": 1,
+     *   "name": "Shampoo",
+     *   "description": "Hair care product",
+     *   "price": 15.99,
+     *   "stock": 100,
+     *   "createdAt": "2023-10-05T10:30:00Z"
+     * }
+     */
     @PostMapping("/products")
     public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productData) {
 
         try {
-            inventoryService.createProduct(productData);
-            return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductResponse(productData));
+            log.info("Product save from controller");
+            return ResponseEntity.status(HttpStatus.CREATED).body(inventoryService.createProduct(productData));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.internalServerError().build();
         }
