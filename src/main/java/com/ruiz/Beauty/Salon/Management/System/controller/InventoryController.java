@@ -7,6 +7,7 @@ import com.ruiz.Beauty.Salon.Management.System.model.Product;
 import com.ruiz.Beauty.Salon.Management.System.service.InventoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -119,14 +120,47 @@ public class InventoryController {
 
     }
 
-    //OK
+    /**
+     * Retrieves all products from the inventory system.
+     *
+     * This endpoint returns a complete list of all products available in the system.
+     * Handles various error scenarios including not found errors and data access issues.
+     * Returns appropriate HTTP status codes based on the operation outcome.
+     *
+     * @return ResponseEntity containing a list of products with HTTP 200 status on success,
+     *         HTTP 404 if no products are found, or HTTP 500 for internal server errors
+     * @throws HttpClientErrorException.NotFound when no products are found in the system
+     * @throws DataAccessException when there are issues accessing the database
+     *
+     * @apiNote This endpoint provides complete inventory visibility and includes
+     *          automatic low stock monitoring in the background.
+     *
+     * @example
+     * // Success response (200 OK):
+     * [
+     *   {
+     *     "id": 1,
+     *     "name": "Shampoo",
+     *     "price": 15.99,
+     *     "stock": 25
+     *   },
+     *   {
+     *     "id": 2,
+     *     "name": "Conditioner",
+     *     "price": 12.99,
+     *     "stock": 8
+     *   }
+     * ]
+     */
     @GetMapping("/products")
-    public ResponseEntity<List<?>> getAllProducts() {
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
         try {
             return ResponseEntity.ok(inventoryService.getAllProducts());
         } catch (HttpClientErrorException.NotFound e) {
             log.error(e.getMessage());
             return ResponseEntity.notFound().build();
+        } catch (DataAccessException e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 

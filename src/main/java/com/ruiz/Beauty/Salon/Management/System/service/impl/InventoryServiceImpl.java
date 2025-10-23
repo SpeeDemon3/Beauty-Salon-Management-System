@@ -191,7 +191,25 @@ public class InventoryServiceImpl implements InventoryService {
         return null;
     }
 
-    //OK
+    /**
+     * Retrieves all products from the inventory system.
+     *
+     * Fetches all product entities from the database, converts them to response DTOs,
+     * and checks for low stock levels during the process. Generates alerts for
+     * products with stock levels below threshold (less than 11 units).
+     *
+     * @return List<ProductResponse> a list of all products as response DTOs,
+     *         or an empty list if no products are found
+     *
+     * @implNote This method performs two main operations:
+     * 1. Retrieves all products from the database
+     * 2. Checks stock levels and generates low stock alerts when necessary
+     * 3. Converts entities to response DTOs for API consumption
+     *
+     * @see Product
+     * @see ProductResponse
+     * @see #generateLowStockAlert()
+     */
     @Override
     public List<ProductResponse> getAllProducts() {
 
@@ -206,6 +224,7 @@ public class InventoryServiceImpl implements InventoryService {
                 }
                 productResponseList.add(productConverter.toProductResponse(product));
             }
+            return productResponseList;
         }
 
         return List.of();
