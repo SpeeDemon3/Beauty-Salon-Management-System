@@ -252,7 +252,23 @@ public class InventoryServiceImpl implements InventoryService {
         return List.of();
     }
 
-    //OK
+    /**
+     * Generates low stock alerts for products with critically low inventory levels.
+     *
+     * Identifies products that have current stock levels at or below the specified
+     * threshold (10 units) by querying the repository. This method serves as an
+     * early warning system to prevent stockouts and ensure inventory availability.
+     * Returns a descriptive alert message indicating the presence of low stock items.
+     *
+     * @return String an alert message indicating that products with low stock were found
+     *
+     * @implNote This method uses a fixed threshold of 10 units to determine low stock conditions.
+     *           The actual product retrieval and processing is delegated to the repository method
+     *           findAllByCurrentStockLessThanEqual().
+     *
+     * @see InventoryRepository#findAllByCurrentStockLessThanEqual(Integer)
+     * @since 1.0
+     */
     @Override
     public String generateLowStockAlert() {
         /**
