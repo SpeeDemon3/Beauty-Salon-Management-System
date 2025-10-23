@@ -76,7 +76,39 @@ public class InventoryController {
 
     }
 
-    //OK
+    /**
+     * Updates an existing product in the inventory system.
+     *
+     * This endpoint updates a product identified by the provided ID with the new data
+     * from the request body. If the product is found and successfully updated,
+     * returns the updated product data. If the product is not found, returns a 404 status.
+     *
+     * @param id the unique identifier of the product to update
+     * @param productData the updated product information
+     * @return ResponseEntity containing the updated product with HTTP 200 status on success,
+     *         or HTTP 404 status if no product is found with the provided ID
+     * @throws Exception if an error occurs during the update process
+     *
+     * @apiNote The product must exist in the system for the update to succeed.
+     *          Partial updates are supported - only provided fields will be updated.
+     *
+     * @example
+     * // Sample request: PUT /api/products/1
+     * {
+     *   "name": "Updated Shampoo",
+     *   "price": 18.99,
+     *   "stock": 150
+     * }
+     *
+     * // Sample response (200 OK):
+     * {
+     *   "id": 1,
+     *   "name": "Updated Shampoo",
+     *   "price": 18.99,
+     *   "stock": 150,
+     *   "updatedAt": "2023-10-05T14:30:00Z"
+     * }
+     */
     @PutMapping("/products/{id}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody ProductRequest productData) {
         try {

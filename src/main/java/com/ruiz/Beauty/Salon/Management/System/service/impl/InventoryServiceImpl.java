@@ -109,7 +109,26 @@ public class InventoryServiceImpl implements InventoryService {
         return productConverter.toProductResponse(productSave);
     }
 
-    //OK
+    /**
+     * Updates an existing product with the provided data.
+     *
+     * Modifies product properties such as sale price, cost price, or minimum stock.
+     * Retrieves the product by ID, applies partial updates to non-null fields,
+     * and persists the changes to the database. Returns the updated product
+     * or null if the product is not found.
+     *
+     * @param id the unique identifier of the product to update
+     * @param productData the product data containing fields to update
+     * @return ProductResponse the updated product data, or null if product not found
+     *
+     * @implNote This method implements partial updates - only non-null fields
+     *           from the productData will be updated. Existing values for null
+     *           fields will remain unchanged.
+     *
+     * @see Product
+     * @see ProductRequest
+     * @see ProductResponse
+     */
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest productData) {
         /**
