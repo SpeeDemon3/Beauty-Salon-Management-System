@@ -314,10 +314,25 @@ public class InventoryServiceImpl implements InventoryService {
 
     }
 
-    //OK
     /**
-     * Busca un producto por su nombre ignorando mayúsculas/minúsculas.
-     * Útil para búsquedas en el catálogo.
+     * Finds a product by name using case-insensitive matching.
+     *
+     * Searches through all products in the inventory to find an exact name match
+     * ignoring case differences. This method performs a linear search through
+     * all products, which may impact performance with large datasets.
+     * Consider using repository-level case-insensitive search for better efficiency.
+     *
+     * @param name the product name to search for (case-insensitive)
+     * @return Optional containing the found product, or empty if no match is found
+     *
+     * @implNote This implementation retrieves all products and performs filtering
+     *           in memory, which may not be optimal for large inventories.
+     *           For better performance, consider implementing a custom repository
+     *           method with database-level case-insensitive search.
+     *
+     * @see Product
+     * @see InventoryRepository#findAll()
+     * @since 1.0
      */
     @Override
     public Optional<Product> findByNameIgnoreCase(String name) {

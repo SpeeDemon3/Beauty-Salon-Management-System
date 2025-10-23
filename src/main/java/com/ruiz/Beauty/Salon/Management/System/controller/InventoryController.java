@@ -208,7 +208,47 @@ public class InventoryController {
         }
     }
 
-    //OK
+    /**
+     * Searches for products by name with case-insensitive matching.
+     *
+     * This endpoint retrieves products whose names contain the provided search string,
+     * ignoring case differences. Returns a list of matching products or an empty list
+     * if no matches are found. Useful for implementing product search functionality
+     * in the inventory management system.
+     *
+     * @param name the search string to match against product names (case-insensitive)
+     * @return ResponseEntity containing a list of matching products with HTTP 200 status,
+     *         or HTTP 404 status if an error occurs during the search process
+     * @throws HttpClientErrorException.NotFound if the search operation fails to retrieve results
+     *
+     * @apiNote The search performs partial matching, so products containing the
+     *          search string anywhere in their name will be returned. The search
+     *          is case-insensitive for better user experience.
+     *
+     * @example
+     * // Sample request: GET /api/inventory/product/shampoo
+     *
+     * // Sample response (200 OK):
+     * [
+     *   {
+     *     "id": 1,
+     *     "name": "Professional Shampoo",
+     *     "description": "Premium hair care product",
+     *     "salePrice": 25.99,
+     *     "currentStock": 45
+     *   },
+     *   {
+     *     "id": 2,
+     *     "name": "Anti-Dandruff Shampoo",
+     *     "description": "Specialized dandruff treatment",
+     *     "salePrice": 19.99,
+     *     "currentStock": 22
+     *   }
+     * ]
+     *
+     * @see InventoryService#findByNameIgnoreCase(String)
+     * @since 1.0
+     */
     @GetMapping("/product/{name}")
     public ResponseEntity<?> findByNameIgnoreCase(@PathVariable String name) {
         try {
