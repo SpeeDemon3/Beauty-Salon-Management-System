@@ -4,6 +4,7 @@ import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductRequest;
 import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductResponse;
 import com.ruiz.Beauty.Salon.Management.System.controller.mapper.ProductMapper;
 import com.ruiz.Beauty.Salon.Management.System.model.Product;
+import com.ruiz.Beauty.Salon.Management.System.service.InventoryService;
 import com.ruiz.Beauty.Salon.Management.System.service.impl.InventoryServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +21,12 @@ import java.util.List;
 @RestController
 @RequestMapping("api/inventory")
 public class InventoryController {
-    private final InventoryServiceImpl inventoryService;
 
+    @Autowired
+    private InventoryService inventoryService;
     @Autowired
     private ProductMapper productMapper;
 
-    // Inyección de dependencias (por constructor, la mejor práctica)
-    @Autowired
-    public InventoryController(InventoryServiceImpl inventoryService) {
-        this.inventoryService = inventoryService;
-    }
 
     // --- 1. GESTIÓN DEL CATÁLOGO (CRUD BÁSICO) ---
 
@@ -88,6 +85,16 @@ public class InventoryController {
         }
     }
 
+    @GetMapping("/product/find/{name}")
+    public ResponseEntity findByNameContainingIgnoreCase(@PathVariable String name) {
+        try {
+            return ResponseEntity.ok(inventoryService.findByNameContainingIgnoreCase(name));
+        } catch (HttpClientErrorException.NotFound e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // --- 2. GESTIÓN DE STOCK (MOVIMIENTOS) ---
 
     //OK
@@ -122,7 +129,7 @@ public class InventoryController {
     @GetMapping("/alert/low-stock")
     // Este método requeriría autenticación de un rol con permisos (ej. ADMIN o EMPLEADO)
     public ResponseEntity<List<ProductResponse>> findAllByStockActualLessThanEqual() {
-        List<Product> productList = inventoryService.findAllByStockActualLessThanEqual(10);
+        List<Product> productList = inventoryService.findAllByCurrentStockLessThanEqual(10);
 
         try {
             if (productList.isEmpty()) {

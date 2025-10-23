@@ -23,7 +23,7 @@ public interface InventoryRepository extends JpaRepository<Product, Long> {
      * @param stockLimit El umbral mínimo a comparar (normalmente el campo 'stockMinimo' de la entidad).
      * @return Lista de productos con stock bajo.
      */
-    List<Product> findAllByStockActualLessThanEqual(Integer stockLimit);
+    List<Product> findAllByCurrentStockLessThanEqual(Integer stockLimit);
 
     /**
      * Busca productos cuyo nombre contenga la cadena proporcionada.

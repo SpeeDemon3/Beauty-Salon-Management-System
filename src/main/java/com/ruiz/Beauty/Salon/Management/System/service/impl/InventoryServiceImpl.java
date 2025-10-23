@@ -191,7 +191,7 @@ public class InventoryServiceImpl implements InventoryService {
          * Llama a un método personalizado en el ProductoRepository: findAllByStockActualLessThan(stockMinimo).
          */
 
-        findAllByStockActualLessThanEqual(10);
+        findAllByCurrentStockLessThanEqual(10);
 
         return "There are products with low stock!!!!";
     }
@@ -261,7 +261,7 @@ public class InventoryServiceImpl implements InventoryService {
      * @return Lista de productos con stock bajo.
      */
     @Override
-    public List<Product> findAllByStockActualLessThanEqual(Integer stockLimit) {
+    public List<Product> findAllByCurrentStockLessThanEqual(Integer stockLimit) {
 
         List<Product> productList = inventoryRepository.findAll();
 
@@ -285,7 +285,23 @@ public class InventoryServiceImpl implements InventoryService {
      * Útil para la función de autocompletar o búsqueda en el TPV.
      */
     @Override
-    public List<Product> findByNameContainingIgnoreCase(String name) {
-        return List.of();
+    public List<ProductResponse> findByNameContainingIgnoreCase(String name) {
+        List<Product> results = inventoryRepository.findByNameContainingIgnoreCase("shampoo");
+
+        if (!results.isEmpty()) {
+            List<ProductResponse> productResponseList = new ArrayList<>();
+
+            for (Product product : results) {
+                productResponseList.add(productConverter.toProductResponse(product));
+            }
+
+            log.info("Products found with name containing '{}': {}", name, productResponseList);
+            return productResponseList;
+
+        } else {
+            log.error("No products found with name containing: {}", name);
+            return null;
+        }
+
     }
 }
