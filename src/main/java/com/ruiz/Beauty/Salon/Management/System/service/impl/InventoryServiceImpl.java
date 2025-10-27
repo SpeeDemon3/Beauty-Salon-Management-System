@@ -79,7 +79,35 @@ public class InventoryServiceImpl implements InventoryService {
         return false;
     }
 
-    // OK
+    /**
+     * Registers an output stock deduction for sales or service usage by decreasing current stock.
+     *
+     * This method processes inventory reduction operations such as product sales, service usage,
+     * or other stock consumption scenarios. It performs critical validation to ensure sufficient
+     * stock is available before deducting from inventory. The operation maintains data integrity
+     * by verifying stock levels and persisting changes to the database.
+     *
+     * @param productId the unique identifier of the product to deduct stock from
+     * @param quantity the quantity of stock to subtract (must be positive and available)
+     * @return Boolean indicating whether the stock deduction was successfully processed:
+     *         true if deduction was successful, false if insufficient stock exists
+     *
+     * @implNote The method performs the following critical steps:
+     * 1. Validates stock availability using checkSufficientStock()
+     * 2. Retrieves the product entity from the repository
+     * 3. Deducts the specified quantity from current stock
+     * 4. Persists the updated stock level to the database
+     * 5. Returns operation status
+     *
+     * @apiNote This method includes critical business logic to prevent negative stock levels.
+     *          Always call checkSufficientStock() before attempting stock deduction in
+     *          production scenarios to maintain inventory accuracy.
+     *
+     * @see #checkSufficientStock(Long, Integer)
+     * @see Product
+     * @see InventoryRepository
+     * @since 1.0
+     */
     @Override
     public Boolean registerOutputStock(Long productId, Integer quantity) {
         /**
@@ -90,6 +118,8 @@ public class InventoryServiceImpl implements InventoryService {
         if(checkSufficientStock(productId, quantity)) {
             Product product = inventoryRepository.findById(productId).get();
             product.setCurrentStock(product.getCurrentStock() - quantity);
+
+            inventoryRepository.save(product);
             return true;
         }
 

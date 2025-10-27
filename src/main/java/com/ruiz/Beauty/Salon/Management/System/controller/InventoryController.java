@@ -357,10 +357,40 @@ public class InventoryController {
         }
     }
 
-    //OK
-    // Nota: La salida de stock se maneja principalmente dentro de TransaccionService,
-    // pero se podría exponer un endpoint para ajustes manuales.
-    @PostMapping("/stock/adjustment/output/{idProduct}")
+    /**
+     * Registers an output stock adjustment for a specific product by decreasing its current stock.
+     *
+     * This endpoint processes inventory reduction operations such as sales, waste, damage,
+     * or manual adjustments by subtracting the specified quantity from the product's current
+     * stock level. Includes authorization validation for restricted operations.
+     *
+     * @param idProduct the unique identifier of the product to adjust stock for
+     * @param quantity the quantity of stock to subtract from the product (must be positive)
+     * @return ResponseEntity containing the operation result with HTTP 200 status on success,
+     *         or HTTP 500 for internal server errors
+     * @throws HttpServerErrorException.InternalServerError for unexpected server errors
+     *         or authorization failures
+     *
+     * @apiNote This endpoint typically requires ADMIN privileges for manual stock adjustments.
+     *          The quantity must be a positive integer representing the amount to subtract.
+     *          Use this for sales transactions, inventory write-offs, damaged goods,
+     *          and manual stock reductions.
+     *
+     * @example
+     * // Sample request (Admin required):
+     * PUT /api/inventory/stock/adjustment/output/123?quantity=5
+     *
+     * // Sample response (200 OK):
+     * true
+     *
+     * // Sample response (500 Internal Server Error):
+     * "Insufficient stock available"
+     *
+     * @see InventoryService#registerOutputStock(Long, Integer)
+     * @since 1.0
+     */
+
+    @PutMapping("/stock/adjustment/output/{idProduct}")
     public ResponseEntity<?> registerOutputStock(@PathVariable Long idProduct, @RequestParam Integer quantity) {
         // Lógica de validación (ej. solo ADMIN puede hacer ajustes manuales)
         try {
