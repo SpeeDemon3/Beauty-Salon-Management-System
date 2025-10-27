@@ -389,7 +389,6 @@ public class InventoryController {
      * @see InventoryService#registerOutputStock(Long, Integer)
      * @since 1.0
      */
-
     @PutMapping("/stock/adjustment/output/{idProduct}")
     public ResponseEntity<?> registerOutputStock(@PathVariable Long idProduct, @RequestParam Integer quantity) {
         // Lógica de validación (ej. solo ADMIN puede hacer ajustes manuales)
@@ -403,24 +402,67 @@ public class InventoryController {
 
     // --- 3. REPORTES Y ALERTAS ---
 
-    //OK
-    @GetMapping("/alert/low-stock")
+    /**
+     * Retrieves all products with low stock levels below the defined threshold.
+     *
+     * This endpoint returns a list of products that have current stock levels at or below
+     * the predefined threshold (10 units). It is typically used for inventory alerts,
+     * restocking notifications, and inventory management dashboards. Requires authentication
+     * with appropriate permissions (e.g., ADMIN or EMPLOYEE roles).
+     *
+     * @return ResponseEntity containing a list of low stock products with HTTP 200 status,
+     *         HTTP 204 status if no low stock products are found, or HTTP 500 for internal errors
+     *
+     * @apiNote This endpoint requires authentication with inventory viewing permissions.
+     *          The low stock threshold is currently hardcoded to 10 units. Consider making
+     *          this configurable for different product categories or business requirements.
+     *
+     * @example
+     * // Sample request:
+     * GET /api/inventory/alert/low-stock
+     *
+     * // Sample response (200 OK):
+     * [
+     *   {
+     *     "id": 1,
+     *     "name": "Professional Shampoo",
+     *     "currentStock": 5,
+     *     "minimumStock": 10,
+     *     "salePrice": 25.99
+     *   },
+     *   {
+     *     "id": 2,
+     *     "name": "Hair Conditioner",
+     *     "currentStock": 8,
+     *     "minimumStock": 15,
+     *     "salePrice": 22.50
+     *   }
+     * ]
+     *
+     * // Sample response (204 No Content):
+     * // Empty body - no products with low stock
+     *
+     * @see InventoryService#findAllByCurrentStockLessThanEqual(Integer)
+     * @since 1.0
+     */    @GetMapping("/alert/low-stock")
     // Este método requeriría autenticación de un rol con permisos (ej. ADMIN o EMPLEADO)
     public ResponseEntity<List<ProductResponse>> findAllByStockActualLessThanEqual() {
-        List<Product> productList = inventoryService.findAllByCurrentStockLessThanEqual(10);
+        List<ProductResponse> productList = inventoryService.findAllByCurrentStockLessThanEqual(10);
 
         try {
             if (productList.isEmpty()) {
-                return ResponseEntity.ok().build();
-            }
-            return null;
-        } catch (Exception e) {
-            List<ProductResponse> productResponseList = new ArrayList<>();
+                return ResponseEntity.noContent().build();
+            } else {
+                List<ProductResponse> productResponseList = new ArrayList<>();
 
-            for (Product response : productList) {
-                productResponseList.add(productMapper.toProductResponse(response));
+                for (ProductResponse response : productList) {
+                    productResponseList.add(response);
+                }
+                return ResponseEntity.ok(productResponseList);
             }
-            return ResponseEntity.ok(productResponseList);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
 
         }
     }

@@ -410,25 +410,42 @@ public class InventoryServiceImpl implements InventoryService {
         return Optional.empty();
     }
 
-    //OK
     /**
-     * Obtiene una lista de productos cuyo stock actual es menor
-     * o igual a un nivel específico. Esencial para las alertas.
+     * Retrieves all products with current stock levels at or below the specified limit.
      *
-     * @param stockLimit El umbral mínimo a comparar (normalmente el campo 'stockMinimo' de la entidad).
-     * @return Lista de productos con stock bajo.
+     * This method scans all products in the inventory and filters those with current stock
+     * levels less than or equal to the provided threshold. It performs in-memory filtering
+     * which may impact performance with large datasets. Consider using repository-level
+     * querying for better efficiency in production environments.
+     *
+     * @param stockLimit the maximum stock level threshold (inclusive) for filtering products
+     * @return List of ProductResponse objects representing products with low stock levels,
+     *         or empty list if no products meet the criteria or inventory is empty
+     *
+     * @implNote This implementation retrieves all products and performs filtering
+     *           in memory, which may not be optimal for large inventories.
+     *           For better performance, consider implementing a custom repository
+     *           method with database-level filtering.
+     *
+     * @apiNote Use this method for inventory alerts, restocking reports, and
+     *          low stock monitoring. The stock limit is inclusive (≤ comparison).
+     *
+     * @see Product
+     * @see ProductResponse
+     * @see InventoryRepository#findAll()
+     * @since 1.0
      */
     @Override
-    public List<Product> findAllByCurrentStockLessThanEqual(Integer stockLimit) {
+    public List<ProductResponse> findAllByCurrentStockLessThanEqual(Integer stockLimit) {
 
         List<Product> productList = inventoryRepository.findAll();
 
         if (!productList.isEmpty()) {
-            List<Product> lowStockProducts = new ArrayList<>();
+            List<ProductResponse> lowStockProducts = new ArrayList<>();
 
             for (Product product : productList) {
                 if (product.getCurrentStock() <= stockLimit) {
-                    lowStockProducts.add(product);
+                    lowStockProducts.add(productConverter.toProductResponse(product));
                 }
             }
 

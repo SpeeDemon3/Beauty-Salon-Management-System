@@ -1,5 +1,6 @@
 package com.ruiz.Beauty.Salon.Management.System.repository;
 
+import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductResponse;
 import com.ruiz.Beauty.Salon.Management.System.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -23,7 +24,7 @@ public interface InventoryRepository extends JpaRepository<Product, Long> {
      * @param stockLimit El umbral mínimo a comparar (normalmente el campo 'stockMinimo' de la entidad).
      * @return Lista de productos con stock bajo.
      */
-    List<Product> findAllByCurrentStockLessThanEqual(Integer stockLimit);
+    List<ProductResponse> findAllByCurrentStockLessThanEqual(Integer stockLimit);
 
     /**
      * Busca productos cuyo nombre contenga la cadena proporcionada.
