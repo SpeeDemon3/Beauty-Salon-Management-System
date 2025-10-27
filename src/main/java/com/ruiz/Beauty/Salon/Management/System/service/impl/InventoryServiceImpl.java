@@ -26,7 +26,34 @@ public class InventoryServiceImpl implements InventoryService {
     @Autowired
     private ProductConverter productConverter;
 
-    //OK
+    /**
+     * Registers a stock entry for a product, increasing its current stock level.
+     *
+     * This method processes incoming merchandise (e.g., supplier deliveries) by
+     * adding the specified quantity to the product's current stock. It validates
+     * both the product existence and the quantity before performing the update.
+     * The operation ensures data consistency by persisting changes to the database.
+     *
+     * @param productId the unique identifier of the product to update
+     * @param quantity the quantity of stock to add (must be positive)
+     * @return Boolean indicating whether the stock entry was successfully registered:
+     *         true if successful, false if product not found or validation failed
+     *
+     * @implNote The method performs the following steps:
+     * 1. Retrieves the product entity from the repository
+     * 2. Validates that the product exists and has valid current stock
+     * 3. Ensures the quantity to add is positive
+     * 4. Updates the current stock by adding the quantity
+     * 5. Persists the changes to the database
+     * 6. Returns operation status
+     *
+     * @apiNote This method is typically used for inventory restocking operations
+     *          and supplier deliveries. It only allows positive stock additions.
+     *
+     * @see Product
+     * @see InventoryRepository
+     * @since 1.0
+     */
     @Override
     public Boolean registerStockEntry(Long productId, Integer quantity) {
         /**
@@ -42,13 +69,14 @@ public class InventoryServiceImpl implements InventoryService {
 
             if (product.getCurrentStock() >= 0 && quantity > 0) {
                 product.setCurrentStock(product.getCurrentStock() + quantity);
+                inventoryRepository.save(product);
                 log.info("Stock updated successfully!!!");
                 return true;
             }
         }
 
-
-        return null;
+        log.warn("Product not found for stock entry - ID: {}", productId);
+        return false;
     }
 
     // OK

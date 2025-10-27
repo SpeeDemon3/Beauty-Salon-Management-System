@@ -312,12 +312,45 @@ public class InventoryController {
 
     // --- 2. GESTIÓN DE STOCK (MOVIMIENTOS) ---
 
-    //OK
-    @PostMapping("/stock/entry/{id}")
-    public ResponseEntity<?> registerStockEntry(@PathVariable Long id, @RequestParam Integer amount) {
+    /**
+     * Registers a stock entry for a specific product by increasing its current stock.
+     *
+     * This endpoint processes inventory restocking operations by adding the specified
+     * quantity to the product's current stock level. It handles both successful updates
+     * and various error scenarios with appropriate HTTP status codes and logging.
+     *
+     * @param id the unique identifier of the product to update
+     * @param quantity the quantity of stock to add to the product (must be positive)
+     * @return ResponseEntity containing the operation result with HTTP 200 status on success,
+     *         HTTP 404 if the product is not found, or HTTP 500 for internal server errors
+     * @throws HttpClientErrorException.NotFound if the specified product does not exist
+     * @throws HttpServerErrorException.InternalServerError for unexpected server errors
+     *
+     * @apiNote This endpoint uses PUT method as it updates an existing resource (product stock).
+     *          The quantity must be a positive integer. Use this for supplier deliveries,
+     *          purchase orders, and inventory adjustments that increase stock levels.
+     *
+     * @example
+     * // Sample request:
+     * PUT /api/inventory/stock/entry/123?quantity=50
+     *
+     * // Sample response (200 OK):
+     * true
+     *
+     * // Sample response (404 Not Found):
+     * // Empty body
+     *
+     * @see InventoryService#registerStockEntry(Long, Integer)
+     * @since 1.0
+     */
+    @PutMapping("/stock/entry/{id}")
+    public ResponseEntity<?> registerStockEntry(@PathVariable Long id, @RequestParam Integer quantity) {
+        log.info("Processing stock entry - Product ID: {}, Quantity: {}", id, quantity);
+
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(inventoryService.registerStockEntry(id, amount));
+            return ResponseEntity.status(HttpStatus.OK).body(inventoryService.registerStockEntry(id, quantity));
         } catch (HttpClientErrorException.NotFound clientErrorException) {
+            log.error(clientErrorException.getMessage());
             return ResponseEntity.notFound().build();
         } catch (HttpServerErrorException.InternalServerError internalServerError) {
             return ResponseEntity.internalServerError().body(internalServerError);
