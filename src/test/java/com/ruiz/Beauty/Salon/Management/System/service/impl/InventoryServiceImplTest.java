@@ -189,6 +189,17 @@ class InventoryServiceImplTest {
                 .build();
     }
 
+    private ProductRequest createProductRequest() {
+        ProductRequest product = new ProductRequest();
+        product.setName("Professional Shampoo");
+        product.setDescription("Premium hair care product for professional use");
+        product.setCostPrice(new BigDecimal("8.50"));
+        product.setSalePrice(new BigDecimal("15.99"));
+        product.setCurrentStock(100);
+        product.setMinimumStock(10);
+        return product;
+    }
+
     private Product createProductEntity() {
         Product product = new Product();
         product.setName("Professional Shampoo");
@@ -220,7 +231,28 @@ class InventoryServiceImplTest {
 
 
     @Test
-    void updateProduct() {
+    void updateProduct_WhenIsSuccessful() {
+
+        // Arrange
+        Long id = 1L;
+        ProductRequest productRequest = createProductRequest();
+
+        Product productEntity = createProductEntity();
+        Product productSave = createSavedProduct();
+        ProductResponse response = createProductResponse();
+
+        when(inventoryRepository.findById(id)).thenReturn(Optional.of(productEntity));
+        when(inventoryRepository.save(any(Product.class))).thenReturn(productSave);
+        when(productConverter.toProductResponse(productSave)).thenReturn(response);
+
+        //ACT
+        ProductResponse productResponseresult = inventoryService.updateProduct(id, productRequest);
+
+        // Verify interactions
+        verify(inventoryRepository).save(productEntity);
+        verify(productConverter).toProductResponse(productSave);
+        verifyNoMoreInteractions(productConverter, inventoryRepository);
+
     }
 
     @Test
