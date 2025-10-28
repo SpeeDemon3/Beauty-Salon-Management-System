@@ -10,8 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,6 +112,12 @@ class InventoryServiceImplTest {
 
     }
 
+    /**
+     * Tests successful product creation with valid data.
+     *
+     * Verifies that when all input data is valid, the product is properly
+     * converted, saved to the repository, and returned as a response DTO.
+     */
     @Test
     void createProduct_WhenIsSuccessful_ShouldReturnProductResponse() {
         // Arrange
@@ -143,6 +151,71 @@ class InventoryServiceImplTest {
         verify(inventoryRepository).save(productEntity);
         verify(productConverter).toProductResponse(savedProduct);
         verifyNoMoreInteractions(productConverter, inventoryRepository);
+    }
+
+    /**
+     * Tests product creation with invalid product data.
+     *
+     * Verifies that validation errors are properly handled when
+     * converter fails to create entity.
+     */
+    @Test
+    void createProduct_WhenConverterFails_ShouldThrowIllegalArgumentException() {
+        // Arrange
+        ProductRequest productRequest = createValidProductRequest();
+
+        when(productConverter.toProduct(productRequest))
+                .thenThrow(new IllegalArgumentException("Invalid product data"));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> inventoryService.createProduct(productRequest));
+
+        assertEquals("Invalid product data", exception.getMessage());
+        verify(productConverter).toProduct(productRequest);
+        verifyNoInteractions(inventoryRepository);
+    }
+
+    // Helper methods to create test data
+
+    private ProductRequest createValidProductRequest() {
+        return ProductRequest.builder()
+                .name("Professional Shampoo")
+                .description("Premium hair care product for professional use")
+                .costPrice(new BigDecimal("8.50"))
+                .salePrice(new BigDecimal("15.99"))
+                .currentStock(100)
+                .minimumStock(10)
+                .build();
+    }
+
+    private Product createProductEntity() {
+        Product product = new Product();
+        product.setName("Professional Shampoo");
+        product.setDescription("Premium hair care product for professional use");
+        product.setCostPrice(new BigDecimal("8.50"));
+        product.setSalePrice(new BigDecimal("15.99"));
+        product.setCurrentStock(100);
+        product.setMinimumStock(10);
+        return product;
+    }
+
+    private Product createSavedProduct() {
+        Product product = createProductEntity();
+        product.setId(1L);
+        return product;
+    }
+
+    private ProductResponse createProductResponse() {
+        return ProductResponse.builder()
+                .id(1L)
+                .name("Professional Shampoo")
+                .description("Premium hair care product for professional use")
+                .costPrice(new BigDecimal("8.50"))
+                .salePrice(new BigDecimal("15.99"))
+                .currentStock(100)
+                .minimumStock(10)
+                .build();
     }
 
 
