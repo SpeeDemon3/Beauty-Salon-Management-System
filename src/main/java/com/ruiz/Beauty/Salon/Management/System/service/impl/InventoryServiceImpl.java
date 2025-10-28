@@ -128,7 +128,32 @@ public class InventoryServiceImpl implements InventoryService {
         return false;
     }
 
-    //OK
+    /**
+     * Verifies if the current stock of a product meets or exceeds the required quantity.
+     *
+     * This private helper method performs a critical stock availability check by
+     * comparing the product's current stock level against the requested quantity.
+     * It is used internally by stock deduction methods to prevent negative inventory
+     * and ensure business rule compliance.
+     *
+     * @param productId the unique identifier of the product to check
+     * @param quantityRequired the quantity needed for the operation (must be positive)
+     * @return Boolean indicating stock availability: true if sufficient stock exists,
+     *         false if stock is insufficient or product is not found
+     *
+     * @implNote This method performs the following steps:
+     * 1. Retrieves the product entity from the repository by ID
+     * 2. Compares current stock against the required quantity
+     * 3. Returns true if stock is sufficient (currentStock ≥ quantityRequired)
+     * 4. Returns false if product not found or stock is insufficient
+     *
+     * @apiNote This is a critical business rule method that prevents overselling
+     *          and maintains inventory integrity. Always use this method before
+     *          performing any stock deduction operations.
+     *
+     * @see #registerOutputStock(Long, Integer)
+     * @since 1.0
+     */
     private Boolean checkSufficientStock(Long productId, Integer quantityRequired) {
         /**
          * Método auxiliar privado que verifica si el stockActual de un producto cubre la cantidad solicitada.
