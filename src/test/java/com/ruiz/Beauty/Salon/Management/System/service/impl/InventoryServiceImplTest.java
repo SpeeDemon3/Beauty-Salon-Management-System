@@ -1,5 +1,7 @@
 package com.ruiz.Beauty.Salon.Management.System.service.impl;
 
+import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductRequest;
+import com.ruiz.Beauty.Salon.Management.System.controller.dto.ProductResponse;
 import com.ruiz.Beauty.Salon.Management.System.model.Product;
 import com.ruiz.Beauty.Salon.Management.System.repository.InventoryRepository;
 import com.ruiz.Beauty.Salon.Management.System.service.converter.ProductConverter;
@@ -109,8 +111,40 @@ class InventoryServiceImplTest {
     }
 
     @Test
-    void createProduct() {
+    void createProduct_WhenIsSuccessful_ShouldReturnProductResponse() {
+        // Arrange
+        ProductRequest productRequest = new ProductRequest(
+                "Product Test",
+                "Product description",
+                new BigDecimal(123.2),
+                new BigDecimal(100),
+                100,
+                10
+        );
+        Product productEntity = new Product();
+        Product savedProduct = new Product();
+        ProductResponse expectedResponse = new ProductResponse();
+
+        when(productConverter.toProduct(productRequest)).thenReturn(productEntity);
+        when(inventoryRepository.save(productEntity)).thenReturn(savedProduct);
+        when(productConverter.toProductResponse(savedProduct)).thenReturn(expectedResponse);
+
+        // Act
+        ProductResponse actualResponse = inventoryService.createProduct(productRequest);
+
+        // Assert
+        assertNotNull(actualResponse, "Response should not be null");
+        assertEquals(expectedResponse.getId(), actualResponse.getId(), "Product ID should match");
+        assertEquals(expectedResponse.getName(), actualResponse.getName(), "Product name should match");
+        assertEquals(expectedResponse.getCostPrice(), actualResponse.getCostPrice(), "Cost price should match");
+
+        // Verify interactions
+        verify(productConverter).toProduct(productRequest);
+        verify(inventoryRepository).save(productEntity);
+        verify(productConverter).toProductResponse(savedProduct);
+        verifyNoMoreInteractions(productConverter, inventoryRepository);
     }
+
 
     @Test
     void updateProduct() {
