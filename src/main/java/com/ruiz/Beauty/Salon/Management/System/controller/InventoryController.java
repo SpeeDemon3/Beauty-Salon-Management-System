@@ -467,12 +467,44 @@ public class InventoryController {
         }
     }
 
-    // OK
+    /**
+     * Generates and retrieves the total inventory cost report.
+     *
+     * This endpoint calculates the total monetary value of all products in inventory
+     * based on their cost prices and current stock levels. The report provides
+     * valuable insights for financial analysis, inventory valuation, and business
+     * decision-making. Returns the total cost as a formatted string.
+     *
+     * @return ResponseEntity containing the total inventory cost as a formatted string
+     *         with HTTP 200 status on success, or HTTP 500 with error message for
+     *         internal server errors
+     * @throws HttpServerErrorException.InternalServerError if an error occurs during
+     *         cost calculation or data retrieval
+     *
+     * @apiNote This endpoint is typically used for financial reporting, inventory
+     *          valuation, and accounting purposes. The calculation considers:
+     *          total cost = Σ(product cost price × current stock) for all products
+     *
+     * @example
+     * // Sample request:
+     * GET /api/inventory/reporte/costo-total
+     *
+     * // Sample response (200 OK):
+     * "Total inventory cost: $15,250.75"
+     *
+     * // Sample response (500 Internal Server Error):
+     * "Error calculating inventory cost: Database connection failed"
+     *
+     * @see InventoryService#getTotalInventoryCost()
+     * @since 1.0
+     */
     @GetMapping("/reporte/costo-total")
     public ResponseEntity<String> getTotalInventoryCost() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(inventoryService.getTotalInventoryCost());
         } catch (HttpServerErrorException.InternalServerError e) {
+            log.error("Internal server error generating inventory cost report: {}", e.getMessage(), e);
+
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

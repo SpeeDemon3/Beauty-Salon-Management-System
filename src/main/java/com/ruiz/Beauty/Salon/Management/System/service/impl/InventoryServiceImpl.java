@@ -339,7 +339,40 @@ public class InventoryServiceImpl implements InventoryService {
         return "There are products with low stock!!!!";
     }
 
-    //OK
+    /**
+     * Calculates the total monetary value of all products in inventory based on cost price.
+     *
+     * This method computes the total inventory cost by iterating through all products
+     * and summing the product of each item's cost price and current stock level.
+     * It handles null values gracefully and ensures precise decimal calculations
+     * using BigDecimal for financial accuracy.
+     *
+     * @return String representation of the total inventory cost formatted to 2 decimal places,
+     *         or "0.00" if no products exist or all products have null cost/stock values
+     *
+     * @implNote The method performs the following steps:
+     * 1. Retrieves all products from the repository
+     * 2. Iterates through each product and calculates individual cost (costPrice × currentStock)
+     * 3. Accumulates total cost using BigDecimal for precision
+     * 4. Applies banking rounding (HALF_UP) to 2 decimal places
+     * 5. Returns the formatted result as a string
+     *
+     * @apiNote This calculation is essential for inventory valuation, financial reporting,
+     *          and accounting purposes. Products with null cost prices or stock levels
+     *          are excluded from the total calculation.
+     *
+     * @example
+     * // Example calculation:
+     * Product A: costPrice = 10.50, currentStock = 5 → cost = 52.50
+     * Product B: costPrice = 25.00, currentStock = 3 → cost = 75.00
+     * Product C: costPrice = null → excluded
+     * Total: 127.50
+     *
+     * @see Product
+     * @see BigDecimal
+     * @see RoundingMode#HALF_UP
+     * @since 1.0
+     */
     @Override
     public String getTotalInventoryCost() {
         /**
