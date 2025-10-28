@@ -67,7 +67,45 @@ class InventoryServiceImplTest {
     }
 
     @Test
-    void registerOutputStock() {
+    void registerOutputStock_ShouldReturnFalse_WhenProductNotFound() {
+
+        // Arrange
+        Long productId = 999L;
+        Integer quantity = 5;
+
+        when(inventoryRepository.findById(productId)).thenReturn(Optional.empty());
+
+        // Act
+        Boolean result = inventoryService.registerOutputStock(productId, quantity);
+
+        // Assert
+        assertFalse(result);
+        verify(inventoryRepository, never()).save(any());
+
+    }
+
+    @Test
+    void registerOutputStock_ShouldReturnTrue_WhenValidInput() {
+
+        // Arrange
+        Long productId = 1L;
+        Integer quantity = 5;
+        Product product = new Product();
+        product.setId(productId);
+        product.setCurrentStock(10);
+        product.setCostPrice(new BigDecimal("25.50"));
+
+        when(inventoryRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(inventoryRepository.save(any(Product.class))).thenReturn(product);
+
+        // Act
+        Boolean result = inventoryService.registerOutputStock(productId, quantity);
+
+        // Assert
+        assertTrue(result);
+        verify(inventoryRepository).save(product);
+        assertEquals(5, product.getCurrentStock()); // 10 - 5
+
     }
 
     @Test
