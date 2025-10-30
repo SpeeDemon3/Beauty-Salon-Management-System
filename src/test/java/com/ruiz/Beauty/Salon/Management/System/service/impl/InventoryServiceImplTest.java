@@ -14,6 +14,9 @@ import org.springframework.dao.DataAccessException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -275,8 +278,44 @@ class InventoryServiceImplTest {
     }
 
     @Test
-    void getAllProducts() {
+    void getAllProducts_WhenProductsExist_ShouldReturnAllProducts() {
+        // Arrange
+        List<Product> productList = Arrays.asList(
+                createProductEntity(),
+                createProductEntity(),
+                createProductEntity()
+        );
 
+        List<ProductResponse> expectedResponses = Arrays.asList(
+                createProductResponse(),
+                createProductResponse(),
+                createProductResponse()
+        );
+
+        // Mockear el repository
+        when(inventoryRepository.findAll()).thenReturn(productList);
+
+        // Mockear el converter para TODOS los productos
+        when(productConverter.toProductResponse(productList.get(0)))
+                .thenReturn(expectedResponses.get(0));
+        when(productConverter.toProductResponse(productList.get(1)))
+                .thenReturn(expectedResponses.get(1));
+        when(productConverter.toProductResponse(productList.get(2)))
+                .thenReturn(expectedResponses.get(2));
+
+        // Act
+        List<ProductResponse> actualResult = inventoryService.getAllProducts();
+
+        // Assert
+        assertNotNull(actualResult, "Result should not be null");
+        assertEquals(3, actualResult.size(), "Should return 3 products");
+
+        // Verify interactions
+        verify(inventoryRepository).findAll();
+        verify(productConverter).toProductResponse(productList.get(0));
+        verify(productConverter).toProductResponse(productList.get(1));
+        verify(productConverter).toProductResponse(productList.get(2));
+        verifyNoMoreInteractions(inventoryRepository, productConverter);
     }
 
     @Test
