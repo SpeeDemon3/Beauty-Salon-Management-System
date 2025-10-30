@@ -257,10 +257,26 @@ class InventoryServiceImplTest {
 
     @Test
     void getProductById() {
+        // Arrange
+        Long id = 1L;
+        ProductResponse response = createProductResponse();
+        Product productEntity = createProductEntity();
+
+        when(inventoryRepository.findById(id)).thenReturn(Optional.of(productEntity));
+        when(productConverter.toProductResponse(productEntity)).thenReturn(response);
+
+        //ACT
+        inventoryService.getProductById(id);
+
+        // Verify interactions
+        verify(inventoryRepository).findById(id);
+        verifyNoMoreInteractions(productConverter, inventoryRepository);
+
     }
 
     @Test
     void getAllProducts() {
+
     }
 
     @Test
