@@ -319,15 +319,63 @@ class InventoryServiceImplTest {
     }
 
     @Test
-    void generateLowStockAlert() {
-    }
-
-    @Test
     void getTotalInventoryCost() {
+        // Arrange
+        List<Product> productList = Arrays.asList(
+                new Product(1L, "Shampoo", "description", new BigDecimal("8.5"), new BigDecimal("8.5"), 25, 10),
+                new Product(2L, "Conditioner", "description", new BigDecimal("12.75"),new BigDecimal("8.5"),  15, 10),
+                new Product(3L, "Hair Gel", "description" , new BigDecimal("5.25"),new BigDecimal("8.5"), 30, 10)
+        );
+
+        when(inventoryRepository.findAll()).thenReturn(productList);
+
+        String expectedTotal = "595.00";
+
+        // Act
+        String actualTotal = inventoryService.getTotalInventoryCost();
+
+        // Assert
+        assertEquals(expectedTotal, actualTotal, "Total cost should match calculated sum");
+
+        // Verify interactions
+        verify(inventoryRepository).findAll();
+        verifyNoMoreInteractions(inventoryRepository);
     }
 
     @Test
     void findByNameIgnoreCase() {
+// Arrange - Crear un producto individual, no una lista
+        Product expectedProduct = new Product();
+        expectedProduct.setId(1L);
+        expectedProduct.setName("Shampoo");
+        expectedProduct.setDescription("Hair care product");
+        expectedProduct.setCostPrice(new BigDecimal("8.5"));
+        expectedProduct.setCurrentStock(25);
+
+        String searchName = "shampoo"; // Usar minúsculas para evitar problemas
+
+        // Mockear el repository para que retorne el producto
+        when(inventoryRepository.findByNameIgnoreCase(searchName))
+                .thenReturn(Optional.of(expectedProduct)); // ✅ Usar Optional.of() no ofNullable
+
+        // Act
+        Optional<ProductResponse> result = inventoryService.findByNameIgnoreCase(searchName);
+
+        // Debug: Ver qué está pasando
+        System.out.println("Result is present: " + result.isPresent());
+        if (result.isPresent()) {
+            System.out.println("Product found: " + result.get().getName());
+        } else {
+            System.out.println("No product found - Optional is empty");
+        }
+
+        // Assert
+        assertTrue(result.isPresent(), "Product should be found");
+        assertEquals(expectedProduct.getId(), result.get().getId());
+        assertEquals("Shampoo", result.get().getName());
+
+        // Verify interactions
+        verify(inventoryRepository).findByNameIgnoreCase(searchName);
     }
 
     @Test

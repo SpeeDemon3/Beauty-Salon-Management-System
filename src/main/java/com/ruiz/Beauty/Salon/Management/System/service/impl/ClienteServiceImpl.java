@@ -2,15 +2,22 @@ package com.ruiz.Beauty.Salon.Management.System.service.impl;
 
 import com.ruiz.Beauty.Salon.Management.System.controller.dto.ClientRequest;
 import com.ruiz.Beauty.Salon.Management.System.controller.dto.ClientResponse;
+import com.ruiz.Beauty.Salon.Management.System.repository.ClientRepository;
 import com.ruiz.Beauty.Salon.Management.System.service.ClienteService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Slf4j
 @Service
 public class ClienteServiceImpl implements ClienteService {
+
+    @Autowired
+    private ClientRepository clientRepository;
+
     @Override
     public ClientResponse createOrUpdateClient(ClientRequest client) {
         /**
@@ -18,6 +25,18 @@ public class ClienteServiceImpl implements ClienteService {
          *
          * Verifica si el cliente ya existe por email o teléfono antes de crear uno nuevo.
          */
+
+
+
+        if(client.getEmail() != null) {
+
+        } else {
+
+
+
+        }
+
+
         return null;
     }
 
