@@ -21,15 +21,15 @@ public class ClientConverter {
         return clientEntity;
     }
 
-    public ClientResponse toClientRespone(ClientResponse response) {
+    public ClientResponse toClientRespone(Client clientEntity) {
         ClientResponse clientResponse = ClientResponse.builder()
-                .id(response.getId())
-                .name(response.getName())
-                .email(response.getEmail())
-                .phone(response.getPhone())
-                .notes(response.getNotes())
-                .loyaltyPoints(response.getLoyaltyPoints())
-                .registrationDate(response.getRegistrationDate())
+                .id(clientEntity.getId())
+                .name(clientEntity.getName())
+                .email(clientEntity.getEmail())
+                .phone(clientEntity.getPhone())
+                .notes(clientEntity.getNotes())
+                .loyaltyPoints(clientEntity.getLoyaltyPoints())
+                .registrationDate(clientEntity.getRegistrationDate())
                 .build();
 
         return clientResponse;
