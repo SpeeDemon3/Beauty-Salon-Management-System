@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Slf4j
@@ -62,6 +63,8 @@ public class ClienteServiceImpl implements ClienteService {
 
                 if (client.getRegistrationDate() != null) {
                     existingClient.setRegistrationDate(client.getRegistrationDate());
+                } else {
+                    existingClient.setRegistrationDate(LocalDate.now());
                 }
 
                 Client clientSave = clientRepository.save(existingClient);
@@ -69,7 +72,7 @@ public class ClienteServiceImpl implements ClienteService {
                 return clientConverter.toClientRespone(clientSave);
 
             } else {
-
+                client.setRegistrationDate(LocalDate.now());
                 Client clientSave = clientRepository.save(clientConverter.toClient(client));
 
                 return clientConverter.toClientRespone(clientSave);
@@ -80,7 +83,6 @@ public class ClienteServiceImpl implements ClienteService {
         }
 
         return null;
-
 
     }
 

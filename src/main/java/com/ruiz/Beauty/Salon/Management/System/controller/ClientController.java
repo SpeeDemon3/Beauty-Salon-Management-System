@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClientController {
     /**
      * Endpoint (URL Base: /api/clientes)	Método HTTP	Propósito	Servicio Invocado
-     * /	POST	Crea un nuevo registro de cliente.	ClienteService.crearOActualizarCliente()
      * /{id}	GET	Obtiene la información detallada de un cliente y su historial.	ClienteService.obtenerHistorialCliente()
      * /{id}/puntos	PUT	Aplica o canjea puntos de fidelidad.	ClienteService.aplicarPuntosFidelidad()
      *
