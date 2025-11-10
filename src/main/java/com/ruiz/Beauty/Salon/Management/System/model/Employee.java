@@ -40,7 +40,9 @@ public class Employee {
     private Long id;
 
     private String name;
+    @Column(nullable = false, unique = true)
     private String email;
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -49,6 +51,9 @@ public class Employee {
     private String phone;
     private LocalDate hiringDate;
     private BigDecimal commissionRate;
+
+    private boolean active = true;
+
 
 
 
